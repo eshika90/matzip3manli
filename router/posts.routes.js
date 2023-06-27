@@ -1,15 +1,17 @@
 const router = require('express').Router();
 const Post = require('../database/Models/post');
-const { Op } = require('sequelize');
+const defaultValidate = require('../Middleware/validation');
+const validator = require('../Middleware/validation');
 // 게시글 작성
-router.post('/', async (req, res) => {
-  const { restaurantName, zone, menu, content, like } = req.body;
+router.post('/', defaultValidate.createPost, async (req, res) => {
+  const { restaurantName, zone, menu, content, like, foodimgURL } = req.body;
   await Post.create({
     restaurantName,
     zone,
     menu,
     content,
     like,
+    foodimgURL,
   });
   res.status(200).json({ messeage: '게시글 업로드 성공!' });
 });
@@ -17,8 +19,8 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const posts = await Post.findAll({
-      attributes: ['id', 'restaurantName', 'like', 'createdAt'],
-      order: [['like', 'DESC']],
+      attributes: ['id', 'restaurantName', 'like', 'menu', 'createdAt'],
+      order: [['like', 'DESC']], // 좋아요순 정렬
     });
     return res.status(200).json({ data: posts });
   } catch (err) {
@@ -38,6 +40,7 @@ router.get('/:id', async (req, res) => {
         'menu',
         'content',
         'like',
+        'foodimgURL',
         'createdAt',
         'updatedAt',
       ],
@@ -55,11 +58,11 @@ router.get('/:id', async (req, res) => {
 // 게시글 수정
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { restaurantName, zone, menu, content } = req.body;
+  const { restaurantName, zone, menu, content, foodimgURL } = req.body;
 
   try {
     const [updatePost] = await Post.update(
-      { restaurantName, zone, menu, content },
+      { restaurantName, zone, menu, content, foodimgURL },
       {
         where: { id },
       }
