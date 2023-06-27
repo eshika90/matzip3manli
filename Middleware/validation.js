@@ -57,11 +57,12 @@ const defaultValidate = {
       .trim()
       .notEmpty()
       .withMessage('메뉴를 한 가지 이상 입력해주세요.'),
-    body('content').trim().notEmpty().withMessage('내용을 입력해주세요.'),
-    body('like')
+    body('content')
       .trim()
-      .isInt({ min: 0, max: 5 })
-      .withMessage('별점은 0-5사이 값만 입력할 수 있습니다.'),
+      .notEmpty()
+      .withMessage('내용을 입력해주세요.')
+      .isLength({ min: 10 })
+      .withMessage('10자 이상을 입력하셔야 합니다.'),
     body('foodimgURL').trim().isURL().withMessage('이미지 URL을 입력해주세요.'),
     validate,
   ],
